@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Pense-bête vocaux",
+    "slug": "pense-bete-vocaux",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0f172a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.votrecompte.pensebetevocaux",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Le micro sert à enregistrer vos mémos vocaux."
+      }
+    },
+    "android": {
+      "package": "com.votrecompte.pensebetevocaux",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0ea5e9"
+      },
+      "permissions": ["RECORD_AUDIO"]
+    },
+    "plugins": [
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Autoriser « Pense-bête vocaux » à utiliser le micro pour enregistrer vos mémos."
+        }
+      ]
+    ]
+  }
+}

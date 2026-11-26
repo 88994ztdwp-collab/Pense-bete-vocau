@@ -1,51 +1,52 @@
-# Pense-bête vocaux
+# Pense-bête vocaux (application mobile)
 
-**PWA mobile** de mémos vocaux : enregistrez de courts messages audio, classez-les dans
-des **catégories**, ajoutez une **date/échéance optionnelle**, et retrouvez tout hors-ligne.
-Installable sur l'écran d'accueil (iOS Safari « Ajouter à l'écran d'accueil », Android Chrome « Installer »).
+Application mobile **React Native + Expo** : enregistrez de courts **mémos audio**,
+classez-les dans des **catégories**, ajoutez une **échéance optionnelle** (avec rappel
+par notification), le tout en **stockage local SQLite** — fonctionne **hors-ligne**.
 
 ## Fonctionnalités
 
-- 🎙️ Enregistrement audio (`MediaRecorder`) avec **transcription en direct en français** (`SpeechRecognition` fr-FR)
-- 🏷️ Catégories personnalisables (couleurs, filtres par onglet)
-- ⏰ Échéance optionnelle par note : tri par échéance, badge « en retard », rappels via `Notification`
-- 🔊 Lecture vocale des notes (`speechSynthesis` fr-FR)
-- ✅ Notes cochables « faite », recherche, export/import JSON
-- 📲 **PWA installable** (manifest + service worker), **mode hors-ligne**, stockage local `IndexedDB`
-- Aucune donnée envoyée sur un serveur
+- 🎙️ Enregistrement audio (`expo-av`), lecture dans la liste
+- 🏷️ Catégories personnalisables (couleurs), filtre par catégorie, déplacement d'une note
+- ⏰ Échéance optionnelle (`@react-native-community/datetimepicker`) : tri par échéance,
+  badge « en retard », **rappel par notification locale** (`expo-notifications`)
+- 🔊 Lecture vocale des notes en français (`expo-speech`)
+- ✅ Notes cochables « faite », recherche plein texte
+- 📴 100 % local et hors-ligne (aucun serveur, aucune donnée envoyée)
 
-## Pourquoi HTTPS est requis
+## Prérequis
 
-Le micro (`getUserMedia`), `crypto.randomUUID` et les service workers exigent un **contexte
-sécurisé**. GitHub Pages sert le site en **HTTPS** automatiquement.
+- Node.js 20+, un compte Expo (gratuit), Xcode (macOS, pour iOS) ou Android Studio
 
-## Déploiement sur GitHub Pages
-
-URL : `https://<utilisateur>.github.io/<nom-du-dépôt>/` (servi en HTTPS ; cochez
-« Enforce HTTPS » dans les réglages Pages pour forcer la redirection).
-
-Étapes :
-
-1. Pousser ce dossier sur la branche `main` du dépôt.
-2. **Settings → Pages → Build and deployment → Source : GitHub Actions**
-   (le workflow `.github/workflows/pages.yml` déploie à chaque push sur `main`),
-   ou bien **Source : Deploy from a branch → main / (root)**.
-3. Ouvrir l'URL HTTPS sur le téléphone et installer l'app sur l'écran d'accueil.
-
-## Développement local
+## Lancer en développement
 
 ```bash
-python3 -m http.server 8000
-# ouvrir http://localhost:8000 (le micro exige HTTPS hors localhost sur la plupart des navigateurs)
+npm install        # ou: npx expo install (ajuste les versions compatibles)
+npx expo start     # scannez le QR code avec Expo Go (Android/iOS)
+npx expo start --android
+npx expo start --ios
 ```
+
+Le micro exige une permission : elle est demandée à la première utilisation
+(`NSMicrophoneUsageDescription` iOS et `RECORD_AUDIO` Android sont déjà déclarés dans `app.json`).
+
+## Publier sur les stores
+
+```bash
+npm install -g eas-cli
+eas login
+eas build:configure
+eas build --platform android   # puis --platform ios
+```
+
+Renseignez `bundleIdentifier` / `package` dans `app.json` avec votre propre domaine.
 
 ## Structure
 
-- `index.html` — page principale
-- `styles.css` — mise en page mobile (safe-area, sombre)
-- `app.js` — logique : enregistrement, transcription, catégories, échéances, stockage IndexedDB, PWA
-- `manifest.webmanifest` — manifeste PWA (standalone, icônes)
-- `sw.js` — service worker (pré-cache du shell, cache-first, navigation hors-ligne)
-- `icons/` — icônes PNG 192/512/maskable + apple-touch-icon
-- `.github/workflows/pages.yml` — déploiement GitHub Pages via Actions
-- `.nojekyll` — désactive Jekyll sur GitHub Pages
+- `App.js` — écran unique : enregistreur, filtres, liste des notes
+- `src/db.js` — SQLite (tables `categories`, `notes`)
+- `src/audio.js` — enregistrement / lecture (`expo-av`)
+- `src/speech.js` — synthèse vocale fr (`expo-speech`)
+- `src/notifications.js` — rappels d'échéance (`expo-notifications`)
+- `src/components/NoteCard.js` — carte de note
+- `assets/` — icône, splash, icône adaptative Android

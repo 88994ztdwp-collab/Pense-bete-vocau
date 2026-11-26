@@ -16,30 +16,69 @@ par notification), le tout en **stockage local SQLite** — fonctionne **hors-li
 
 ## Prérequis
 
-- Node.js 20+, un compte Expo (gratuit), Xcode (macOS, pour iOS) ou Android Studio
+- Ordinateur avec Node.js 20+
+- Compte Expo gratuit sur [expo.dev](https://expo.dev)
+- Pour iOS uniquement : compte Apple Developer (99 $/an) ; Android : aucun compte payant requis pour un APK
 
-## Lancer en développement
+## Développement local (Expo Go)
 
 ```bash
-npm install        # ou: npx expo install (ajuste les versions compatibles)
-npx expo start     # scannez le QR code avec Expo Go (Android/iOS)
-npx expo start --android
-npx expo start --ios
+git clone https://github.com/88994ztdwp-collab/Pense-bete-vocau.git
+cd Pense-bete-vocau
+npm install        # ou: npx expo install (cale les versions compatibles du SDK)
+npx expo start     # QR code à scanner avec l'app Expo Go (même Wi-Fi, ou --tunnel)
 ```
 
-Le micro exige une permission : elle est demandée à la première utilisation
-(`NSMicrophoneUsageDescription` iOS et `RECORD_AUDIO` Android sont déjà déclarés dans `app.json`).
+## Builds et publication avec EAS
 
-## Publier sur les stores
+Le fichier `eas.json` est fourni (profils `development`, `preview`, `production`).
 
 ```bash
 npm install -g eas-cli
-eas login
-eas build:configure
-eas build --platform android   # puis --platform ios
+eas login                      # compte Expo
+eas whoami                     # vérification
 ```
 
-Renseignez `bundleIdentifier` / `package` dans `app.json` avec votre propre domaine.
+Avant le premier build, remplacez dans `app.json` les identifiants par les vôtres :
+`ios.bundleIdentifier` et `android.package` (ex. `com.votrenom.pensebetevocaux`).
+
+### APK Android de test (sans compte payant)
+
+```bash
+eas build --profile development --platform android
+# suivez le build sur expo.dev, puis téléchargez l'artefact :
+eas build:download --platform android --latest
+# transférez l'.apk sur le téléphone et installez-le (autoriser la source inconnue)
+```
+
+### iOS (compte Apple Developer requis)
+
+```bash
+eas build --profile development --platform ios
+# enregistrez l'UDID de l'iPhone : eas device:create
+# gérez les certificats : eas credentials  (laissez EAS les générer)
+# puis installez le build depuis le lien/QR fourni par EAS, ou via TestFlight
+```
+
+### Publication sur les stores (production)
+
+```bash
+eas build --profile production --platform android   # génère l'AAB
+eas submit --platform android                        # Google Play Console (clé de service JSON)
+eas build --profile production --platform ios
+eas submit --platform ios                            # App Store Connect
+```
+
+### Commandes utiles
+
+```bash
+eas build:list        # historique des builds
+eas build:view <id>   # détail/logs d'un build
+eas credentials       # identifiants iOS (certificats, profils) et Android (keystore)
+```
+
+Toute modification du code nécessite un **nouveau build** (pas de mise à jour OTA :
+`expo-updates` n'est pas configuré).
 
 ## Structure
 
@@ -50,3 +89,4 @@ Renseignez `bundleIdentifier` / `package` dans `app.json` avec votre propre doma
 - `src/notifications.js` — rappels d'échéance (`expo-notifications`)
 - `src/components/NoteCard.js` — carte de note
 - `assets/` — icône, splash, icône adaptative Android
+- `eas.json` — profils de build EAS

@@ -20,6 +20,20 @@ par notification), le tout en **stockage local SQLite** — fonctionne **hors-li
 - Compte Expo gratuit sur [expo.dev](https://expo.dev)
 - Pour iOS uniquement : compte Apple Developer (99 $/an) ; Android : aucun compte payant requis pour un APK
 
+## 📥 Télécharger l'APK Android (sans store, sans compte)
+
+Un APK signé est fourni dans ce dépôt : [`pense-bete-vocaux.apk`](./pense-bete-vocaux.apk)
+(téléchargement direct : <https://raw.githubusercontent.com/88994ztdwp-collab/Pense-bete-vocau/main/pense-bete-vocaux.apk>)
+
+Installation sur le téléphone Android :
+
+1. Ouvrez l'URL ci-dessus sur le téléphone (ou transférez le fichier par USB/mail/Drive).
+2. Ouvrez le fichier téléchargé → Android demande « Installer depuis une source inconnue » → autorisez (Paramètres → Applications → accès spécial → Installer des applications inconnues).
+3. L'app **Pense-bête vocaux** s'installe avec son icône 🎙️. Au premier enregistrement, acceptez la permission micro.
+
+> Rebuild local de l'APK : `npx expo prebuild -p android --clean` puis `cd android && ./gradlew assembleRelease`
+> (JDK 17 + SDK Android 35 requis ; l'APK est signé avec la clé debug du template Expo, ce qui suffit pour une installation locale).
+
 ## Développement local (Expo Go)
 
 ```bash
